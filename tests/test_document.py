@@ -417,6 +417,19 @@ class TestDocument(BaseTest):
         assert jane.id != john.id
         assert jane.name == 'John Doe'
 
+    def test_modify_pk_field(self):
+
+        @self.instance.register
+        class User(Document):
+            primary_key = fields.ObjectIdField(attribute='_id', default=ObjectId)
+            name = fields.StrField()
+
+        john = User(name='John Doc')
+        john.primary_key = ObjectId()
+        john.is_created = True
+        with pytest.raises(exceptions.AlreadyCreatedError):
+            john.primary_key = ObjectId()
+
 
 class TestConfig(BaseTest):
 

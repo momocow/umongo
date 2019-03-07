@@ -282,7 +282,7 @@ class DocumentImplementation(BaseDataObject, Implementation, metaclass=MetaDocum
         self._data.delete(name)
 
     def __setitem__(self, name, value):
-        self._data.set(name, value)
+        self._data.set(name, value, is_created=self.is_created)
 
     def __setattr__(self, name, value):
         # Try to retrieve name among class's attributes and __slots__
@@ -293,7 +293,7 @@ class DocumentImplementation(BaseDataObject, Implementation, metaclass=MetaDocum
         if name in self.__real_attributes:
             object.__setattr__(self, name, value)
         else:
-            self._data.set(name, value, to_raise=AttributeError)
+            self._data.set(name, value, to_raise=AttributeError, is_created=self.is_created)
 
     def __getattr__(self, name):
         if name[:2] == name[-2:] == '__':

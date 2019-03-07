@@ -49,6 +49,10 @@ class NotCreatedError(UMongoError):
     pass
 
 
+class AlreadyCreatedError(UMongoError):
+    pass
+
+
 class NoCollectionDefinedError(UMongoError):
     pass
 

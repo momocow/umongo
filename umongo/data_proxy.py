@@ -1,7 +1,7 @@
 from marshmallow import ValidationError, missing
 
 from .abstract import BaseDataObject
-from .exceptions import FieldNotLoadedError, UnknownFieldInDBError
+from .exceptions import AlreadyCreatedError, FieldNotLoadedError, UnknownFieldInDBError
 from .i18n import gettext as _
 
 
@@ -144,8 +144,12 @@ class BaseDataProxy:
         name, _ = self._get_field(name, to_raise)
         return self._data[name]
 
-    def set(self, name, value, to_raise=KeyError):
+    def set(self, name, value, to_raise=KeyError, is_created=False):
         name, field = self._get_field(name, to_raise)
+        if name == '_id' and is_created:
+            raise AlreadyCreatedError(
+                "The private key of a document can't be changed "
+                "if it is already created in database")
         if value is None and not getattr(field, 'allow_none', False):
             raise ValidationError(field.error_messages['null'])
         if value is not None:
