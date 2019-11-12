@@ -109,7 +109,7 @@ class BaseField(ma_fields.Field):
         'unique_compound': N_('Values of fields {fields} must be unique together.')
     }
 
-    def __init__(self, *args, io_validate=None, unique=False, instance=None, **kwargs):
+    def __init__(self, *args, io_validate=None, unique=False, instance=None, check_modified=None, **kwargs):
         if 'missing' in kwargs:
             raise RuntimeError("uMongo doesn't use `missing` argument, use `default` "
                 "instead and `marshmallow_missing`/`marshmallow_default` "
@@ -161,6 +161,7 @@ class BaseField(ma_fields.Field):
         self.io_validate_recursive = None
         self.unique = unique
         self.instance = instance
+        self.check_modified = check_modified
 
     def __repr__(self):
         return ('<fields.{ClassName}(default={self.default!r}, '
@@ -174,6 +175,7 @@ class BaseField(ma_fields.Field):
                 'io_validate={self.io_validate}, '
                 'io_validate_recursive={self.io_validate_recursive}, '
                 'unique={self.unique}, '
+                'check_modified={self.check_modified}, '
                 'instance={self.instance})>'
                 .format(ClassName=self.__class__.__name__, self=self))
 

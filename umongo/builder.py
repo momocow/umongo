@@ -109,6 +109,7 @@ def _build_document_opts(instance, template, name, nmspc, bases):
     kwargs['allow_inheritance'] = getattr(meta, 'allow_inheritance', None)
     kwargs['is_child'] = _is_child(bases)
     kwargs['strict'] = getattr(meta, 'strict', True)
+    kwargs['check_modified'] = getattr(meta, 'check_modified', False)
 
     # Handle option inheritance and integrity checks
     for base in bases:

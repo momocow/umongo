@@ -73,6 +73,8 @@ class DocumentOpts:
     is_child             no                     Document inherit of a non-abstract document
     strict               yes                    Don't accept unknown fields from mongo
                                                 (default: True)
+    check_modified       yes                    Perform equivalence check or not before marking modified
+                                                (default: False)
     indexes              yes                    List of custom indexes
     offspring            no                     List of Documents inheriting this one
     ==================== ====================== ===========
@@ -88,13 +90,14 @@ class DocumentOpts:
                 'collection_name={self.collection_name}, '
                 'is_child={self.is_child}, '
                 'strict={self.strict}, '
+                'check_modified={self.check_modified}, '
                 'indexes={self.indexes}, '
                 'offspring={self.offspring})>'
                 .format(ClassName=self.__class__.__name__, self=self))
 
     def __init__(self, instance, template, collection_name=None, abstract=False,
                  allow_inheritance=None, indexes=None, is_child=True, strict=True,
-                 offspring=None):
+                 check_modified=False, offspring=None):
         self.instance = instance
         self.template = template
         self.collection_name = collection_name if not abstract else None
@@ -103,6 +106,7 @@ class DocumentOpts:
         self.indexes = indexes or []
         self.is_child = is_child
         self.strict = strict
+        self.check_modified = check_modified
         self.offspring = set(offspring) if offspring else set()
         if self.abstract and not self.allow_inheritance:
             raise DocumentDefinitionError("Abstract document cannot disable inheritance")
@@ -141,7 +145,8 @@ class DocumentImplementation(BaseDataObject, Implementation, metaclass=MetaDocum
             raise AbstractDocumentError("Cannot instantiate an abstract Document")
         self.is_created = False
         "Return True if the document has been commited to database"  # is_created's docstring
-        self._data = self.DataProxy(kwargs)
+        self._data = self.DataProxy(kwargs,
+            check_modified=self.opts.check_modified)
 
     def __repr__(self):
         return '<object Document %s.%s(%s)>' % (
